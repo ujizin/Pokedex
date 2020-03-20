@@ -1,10 +1,10 @@
+import 'package:PokedexFlutter/app/modules/home/home_module.dart';
 import 'package:PokedexFlutter/app/repository/pokemons_repository.dart';
 import 'package:PokedexFlutter/app/app_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter/material.dart';
 import 'package:PokedexFlutter/app/app_widget.dart';
 
-import 'modules/splash/home/home_module.dart';
 import 'modules/splash/splash_module.dart';
 
 class AppModule extends MainModule {
