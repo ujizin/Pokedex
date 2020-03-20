@@ -6,10 +6,9 @@ class HomeController = _HomeControllerBase with _$HomeController;
 
 abstract class _HomeControllerBase with Store {
   @observable
-  int value = 0;
+  double offset = 0.0;
 
   @action
-  void increment() {
-    value++;
-  }
+  setOffset(double offset) =>
+      offset != null ? this.offset = offset * 0.00095 : null;
 }
