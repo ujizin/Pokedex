@@ -1,3 +1,4 @@
+import 'package:PokedexFlutter/app/custom_widgets/background_pokemon.dart';
 import 'package:PokedexFlutter/app/modules/splash/splash_animation.dart';
 import 'package:PokedexFlutter/app/modules/splash/splash_controller.dart';
 import 'package:flutter/material.dart';
@@ -18,13 +19,6 @@ class _SplashPageState extends ModularState<SplashPage, SplashController>
   //use 'controller' variable to access controller
   SplashAnimation animator;
 
-  void get _finishAnimation => ((_) => animator.finishAnimation(
-        () {
-          controller.setReady(true);
-        },
-        () => Modular.to.pushReplacementNamed(""),
-      ));
-
   AnimationController loaderAnimation;
   AnimationController rollAnimation;
   AnimationController finishAnimation;
@@ -38,7 +32,19 @@ class _SplashPageState extends ModularState<SplashPage, SplashController>
 
     animator = SplashAnimation(loaderAnimation, rollAnimation, finishAnimation);
 
-    when((_) => controller.finished, () => _finishAnimation);
+    when(
+      (_) => controller.finished == true,
+      (() {
+        animator.finishAnimation(
+          () {
+            controller.setReady(true);
+          },
+          () => Modular.to.pushReplacementNamed("/home"),
+        );
+      }),
+    );
+
+    controller.fetchPokemon();
   }
 
   @override
@@ -60,7 +66,7 @@ class _SplashPageState extends ModularState<SplashPage, SplashController>
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        _buildBackground(),
+        BackgroundPokemon(),
         _buildSplash(),
       ],
     );
@@ -119,29 +125,6 @@ class _SplashPageState extends ModularState<SplashPage, SplashController>
           ],
         );
       }),
-    );
-  }
-
-  Container _buildBackground() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[
-            Colors.blue,
-            Colors.lightBlue,
-            Colors.purple,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Opacity(
-        opacity: 0.4,
-        child: Image.asset(
-          'assets/images/poke_fundo.png',
-          fit: BoxFit.cover,
-        ),
-      ),
     );
   }
 }

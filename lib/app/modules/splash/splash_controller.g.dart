@@ -57,6 +57,16 @@ mixin _$SplashController on SplashControllerBase, Store {
   }
 
   @override
+  dynamic setFinished(dynamic isFinished) {
+    final _$actionInfo = _$SplashControllerBaseActionController.startAction();
+    try {
+      return super.setFinished(isFinished);
+    } finally {
+      _$SplashControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     final string =
         'ready: ${ready.toString()},finished: ${finished.toString()}';

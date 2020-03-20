@@ -22,7 +22,9 @@ abstract class SplashControllerBase with Store {
   setFinished(isFinished) => finished = isFinished;
 
   fetchPokemon() async {
-    await repository.fetchPokemons();
-    setFinished(true);
+    // await repository.fetchPokemons();
+    Future.delayed(Duration(seconds: 3)).then((_) {
+      setFinished(true);
+    });
   }
 }
