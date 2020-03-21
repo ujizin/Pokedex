@@ -2,6 +2,7 @@ import 'package:PokedexFlutter/app/custom_widgets/background_pokemon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'home_animation.dart';
 import 'home_controller.dart';
 
@@ -23,6 +24,7 @@ class _HomePageState extends ModularState<HomePage, HomeController>
 
   @override
   void initState() {
+    super.initState();
     animationController = AnimationController(
       duration: Duration(seconds: 3),
       vsync: this,
@@ -34,7 +36,7 @@ class _HomePageState extends ModularState<HomePage, HomeController>
       });
 
     homeAnimation = HomeAnimation(animationController);
-    super.initState();
+    controller.getPokemons();
   }
 
   @override
@@ -65,24 +67,106 @@ class _HomePageState extends ModularState<HomePage, HomeController>
         return Transform.translate(
             offset: Offset(homeAnimation.list.value, 0), child: child);
       },
-      child: ListWheelScrollView(
-        controller: _scrollController,
-        physics: BouncingScrollPhysics(),
-        itemExtent: 200,
-        perspective: 0.002,
-        offAxisFraction: -0.5,
-        squeeze: 0.85,
-        children: List.generate(
-          100,
-          (index) => Container(
-            margin: EdgeInsets.only(left: 50),
-            color: Colors.amber,
-            child: ListTile(
-              title: Text("Teste"),
-            ),
-          ),
-        ),
+      child: Observer(builder: (_) {
+        var pokemons = controller.listPokemons;
+        return pokemons != null
+            ? ListWheelScrollView(
+                controller: _scrollController,
+                physics: BouncingScrollPhysics(),
+                itemExtent: 125,
+                perspective: 0.002,
+                offAxisFraction: -0.5,
+                squeeze: 0.85,
+                children: List.generate(
+                  controller.listPokemons.length,
+                  (index) {
+                    int id = index + 1;
+                    return Card(
+                      shadowColor: Colors.black,
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: _borderCard(),
+                      ),
+                      margin: EdgeInsets.only(left: 50),
+                      child: Stack(
+                        children: <Widget>[
+                          _backgroundPokemon(),
+                          Row(
+                            children: <Widget>[
+                              _imagePokemon(id),
+                              _pokemonDetails(id, pokemons[index]),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              )
+            : Container();
+      }),
+    );
+  }
+
+  Container _pokemonDetails(id, pokemon) {
+    return Container(
+      margin: EdgeInsets.only(left: 60),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: _pokemonTitle(id, pokemon),
       ),
+    );
+  }
+
+  List<Widget> _pokemonTitle(id, pokemon) {
+    return [
+      Text(
+        _formatNumber(id),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24.0,
+          color: Colors.black,
+        ),
+        textAlign: TextAlign.start,
+      ),
+      SizedBox(height: 2),
+      Text(
+        capitalize(pokemon.name),
+        style: TextStyle(
+          fontSize: 22.5,
+        ),
+      )
+    ];
+  }
+
+  capitalize(name) => "${name[0].toUpperCase()}${name.substring(1)}";
+
+  String _formatNumber(index) {
+    int zeroLength = 3 - index.toString().length;
+    String zero = "";
+    for (var i = 0; i < zeroLength; i++) {
+      zero += "0";
+    }
+    return "#$zero$index";
+  }
+
+  FadeInImage _imagePokemon(int id) {
+    return FadeInImage.memoryNetwork(
+      image:
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+      placeholder: kTransparentImage,
+      width: 125,
+      height: 125,
+      fadeInDuration: Duration(milliseconds: 100),
+      fit: BoxFit.contain,
+    );
+  }
+
+  BorderRadius _borderCard() {
+    return BorderRadius.only(
+      topLeft: Radius.circular(15),
+      bottomLeft: Radius.circular(15),
     );
   }
 
@@ -109,4 +193,20 @@ class _HomePageState extends ModularState<HomePage, HomeController>
       ),
     );
   }
+
+  _backgroundPokemon() => Container(
+        decoration: BoxDecoration(
+          borderRadius: _borderCard(),
+          gradient: LinearGradient(
+            colors: <Color>[
+              Colors.red[400],
+              Colors.black,
+              Colors.grey[300],
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: [0.4, 0.4, 0.45],
+          ),
+        ),
+      );
 }

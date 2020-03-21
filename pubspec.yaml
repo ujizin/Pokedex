@@ -17,6 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  transparent_image: ^1.0.0
   moor_flutter: ^2.1.1
   moor_generator: ^2.4.0
   dio: ^3.0.9
