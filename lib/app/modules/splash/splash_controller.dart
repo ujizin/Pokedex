@@ -23,6 +23,8 @@ abstract class SplashControllerBase with Store {
 
   fetchPokemon() async {
     await repository.fetchPokemons();
-    setFinished(true);
+    Future.delayed(Duration(seconds: 1)).then((_) {
+      setFinished(true);
+    });
   }
 }

@@ -70,37 +70,45 @@ class _HomePageState extends ModularState<HomePage, HomeController>
       child: Observer(builder: (_) {
         var pokemons = controller.listPokemons;
         return pokemons != null
-            ? ListWheelScrollView(
+            ? ListWheelScrollView.useDelegate(
                 controller: _scrollController,
                 physics: BouncingScrollPhysics(),
                 itemExtent: 125,
                 perspective: 0.002,
                 offAxisFraction: -0.5,
                 squeeze: 0.85,
-                children: List.generate(
-                  controller.listPokemons.length,
-                  (index) {
-                    int id = index + 1;
-                    return Card(
-                      shadowColor: Colors.black,
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: _borderCard(),
-                      ),
-                      margin: EdgeInsets.only(left: 50),
-                      child: Stack(
-                        children: <Widget>[
-                          _backgroundPokemon(),
-                          Row(
+                childDelegate: ListWheelChildLoopingListDelegate(
+                  children: List.generate(
+                    controller.listPokemons.length,
+                    (index) {
+                      int pokemonID = index + 1;
+                      return GestureDetector(
+                        onTap: () {
+                          print("Ta funfando?");
+                          Modular.to.pushNamed('/pokemon/$pokemonID');
+                        },
+                        child: Card(
+                          shadowColor: Colors.black,
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: _borderCard(),
+                          ),
+                          margin: EdgeInsets.only(left: 50),
+                          child: Stack(
                             children: <Widget>[
-                              _imagePokemon(id),
-                              _pokemonDetails(id, pokemons[index]),
+                              _backgroundPokemon(),
+                              Row(
+                                children: <Widget>[
+                                  _imagePokemon(pokemonID),
+                                  _pokemonDetails(pokemonID, pokemons[index]),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               )
             : Container();
